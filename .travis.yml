@@ -9,8 +9,12 @@ services:
 
 before_install:
 sh script.sh
-install:
 
+install:
+echo "no"
 
 script:
+echo "no"
+
 after_success:
+echo "no"
