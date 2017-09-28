@@ -1,8 +1,16 @@
-#!/bin/bash
-
-if [[ $TRAVIS_BRANCH == 'master' ]]
-  sh master.sh 
+sudo: required
+language: node_js
+node_js:
+  - "node"
   
-else
-  sh dev.sh
-fi
+services:
+  - docker
+
+
+before_install:
+sh script.sh
+install:
+
+
+script:
+after_success:
