@@ -103,16 +103,16 @@ before_deploy:
 
 
 deploy:
-- provider:  s3
+  provider:  s3
   access_key_id:  $OWH_ACCESS_KEY
   skip_cleanup:   true
   on: &2
-#    repo: semanticbits/owh-ds
+    repo: semanticbits/owh-ds
     branch: develop
     condition: "$TRAVIS_BRANCH" != "master"
      # - release (TBD)
   bucket:   sb-owh-deployment
-- provider: codedeploy
+  provider: codedeploy
   access_key_id: $OWH_ACCESS_KEY
   application: OwhDev
   deployment_group: $TRAVIS_BRANCH
