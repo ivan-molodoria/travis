@@ -37,7 +37,7 @@ install:
 
 before_script:
   - if [ "$TRAVIS_BRANCH" != "master" ]; then sleep 10; fi
-  - if [ "$TRAVIS_BRANCH" != "master" ]; then curl http://54.242.94.197/esdev  # To verify ElasticSearch running
+  - if [ "$TRAVIS_BRANCH" != "master" ]; then curl http://54.242.94.197/esdev; fi  # To verify ElasticSearch running
   # - curl http://54.242.94.197/stats/questions?d=yrbss # check connection to YRBS dev service; fi
   - if [ "$TRAVIS_BRANCH" != "master" ]; then java -version; fi
   - if [ "$TRAVIS_BRANCH" != "master" ]; then echo $JAVA_HOME; fi
@@ -45,7 +45,7 @@ before_script:
   - if [ "$TRAVIS_BRANCH" != "master" ]; then sh -e /etc/init.d/xvfb start; fi
   - if [ "$TRAVIS_BRANCH" != "master" ]; then npm start > /dev/null &; fi
   - if [ "$TRAVIS_BRANCH" != "master" ]; then ./node_modules/protractor/bin/webdriver-manager update; fi
-  - if [ "$TRAVIS_BRANCH" != "master" ]; then sleep 1 #give server time to start; fi
+  - if [ "$TRAVIS_BRANCH" != "master" ]; then sleep 1; fi #give server time to start
 
 group: deprecated-2017Q2
 language: java
@@ -101,27 +101,26 @@ before_deploy:
   - if [ "$TRAVIS_BRANCH" != "master" ]; then ls dpl_tmp; fi
   - if [ "$TRAVIS_BRANCH" != "master" ]; then rm -rf dpl_tmp; fi
 
-#if [ "$TRAVIS_BRANCH" != "master" ]; then
-#deploy:
-#-  then provider:  s3
-#  access_key_id: $OWH_ACCESS_KEY
-#    secret_access_key: $OWH_ACCESS_SECRET
-#  local_dir:  dpl_cd_upload
-#  skip_cleanup:  true
-#  on:  &2
-#    repo:  semanticbits/owh-ds
-#    branch:
-#     -  develop
-#     # - release (TBD)
-#  bucket:  sb-owh-deployment
-#  ; fi
-#- provider: if [ "$TRAVIS_BRANCH" != "master" ]; then codedeploy
-#  access_key_id: if [ "$TRAVIS_BRANCH" != "master" ]; then $OWH_ACCESS_KEY
-#  secret_access_key: if [ "$TRAVIS_BRANCH" != "master" ]; then $OWH_ACCESS_SECRET
-#  bundle_type: if [ "$TRAVIS_BRANCH" != "master" ]; then zip
-#  application: if [ "$TRAVIS_BRANCH" != "master" ]; then OwhDev
-#  deployment_group: if [ "$TRAVIS_BRANCH" != "master" ]; then $TRAVIS_BRANCH
-#  on: if [ "$TRAVIS_BRANCH" != "master" ]; then *2; fi
+
+deploy:
+- provider:  if [ "$TRAVIS_BRANCH" != "master" ]; s3 ; fi
+  access_key_id:  if [ "$TRAVIS_BRANCH" != "master" ]; $OWH_ACCESS_KEY ; fi
+  secret_access_key:  if [ "$TRAVIS_BRANCH" != "master" ]; $OWH_ACCESS_SECRET ; fi
+  local_dir:   if [ "$TRAVIS_BRANCH" != "master" ]; dpl_cd_upload ; fi
+  skip_cleanup:   if [ "$TRAVIS_BRANCH" != "master" ]; true ; fi
+  on:   if [ "$TRAVIS_BRANCH" != "master" ]; &2 ; fi
+    repo:   if [ "$TRAVIS_BRANCH" != "master" ]; semanticbits/owh-ds ; fi
+    branch:
+     -   if [ "$TRAVIS_BRANCH" != "master" ]; develop ; fi
+     # - release (TBD)
+  bucket:   if [ "$TRAVIS_BRANCH" != "master" ]; sb-owh-deployment
+- provider: if [ "$TRAVIS_BRANCH" != "master" ]; then codedeploy
+  access_key_id: if [ "$TRAVIS_BRANCH" != "master" ]; then $OWH_ACCESS_KEY
+  secret_access_key: if [ "$TRAVIS_BRANCH" != "master" ]; then $OWH_ACCESS_SECRET
+  bundle_type: if [ "$TRAVIS_BRANCH" != "master" ]; then zip
+  application: if [ "$TRAVIS_BRANCH" != "master" ]; then OwhDev
+  deployment_group: if [ "$TRAVIS_BRANCH" != "master" ]; then $TRAVIS_BRANCH
+  on: if [ "$TRAVIS_BRANCH" != "master" ]; then *2; fi
 
 after_script:
   - if [ "$TRAVIS_BRANCH" != "master" ]; then kill -9 $(fuser -n tcp 3000 2> /dev/null); fi
