@@ -106,7 +106,7 @@ deploy:
   provider:  s3
   access_key_id:  $OWH_ACCESS_KEY
   skip_cleanup:   true
-  on: &2
+  on: 
     repo: semanticbits/owh-ds
     branch: develop
     condition: "$TRAVIS_BRANCH" != "master"
@@ -116,7 +116,7 @@ deploy:
   access_key_id: $OWH_ACCESS_KEY
   application: OwhDev
   deployment_group: $TRAVIS_BRANCH
-  on: *2
+  on: 
     condition: "$TRAVIS_BRANCH" != "master"
       
 after_script:
