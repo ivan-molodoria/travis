@@ -108,8 +108,7 @@ deploy:
   skip_cleanup:   true
   on: &2
 #    repo: semanticbits/owh-ds
-    branch:
-     - develop
+    branch: develop
     condition: "$TRAVIS_BRANCH" != "master"
      # - release (TBD)
   bucket:   sb-owh-deployment
