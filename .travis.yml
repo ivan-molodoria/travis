@@ -48,9 +48,9 @@ before_script:
   - if [ "$TRAVIS_BRANCH" != "master" ]; then sleep 1; fi #give server time to start
 
 group: deprecated-2017Q2
-language: java
+language: if [ "$TRAVIS_BRANCH" != "master" ]; then java; fi
 jdk:
-  - oraclejdk8
+  -  if [ "$TRAVIS_BRANCH" != "master" ]; then oraclejdk8; fi
 
 script:
   - if [ "$TRAVIS_BRANCH" != "master" ]; then npm run-script test-single-run; fi
@@ -63,7 +63,7 @@ script:
   - if [ "$TRAVIS_BRANCH" != "master" ]; then sleep 10; fi
   - if [ "$TRAVIS_BRANCH" != "master" ]; then cd ../client; fi
   #- ./node_modules/.bin/protractor test/e2e-tests/protractor.conf.js --browser=firefox --cucumberOpts.tags=@Factsheets
-  # - ./node_modules/.bin/protractor test/e2e-tests/protractor.conf.js --browser=firefox --cucumberOpts.tags=@Yrbs,@PRAMS,@Home
+  #- ./node_modules/.bin/protractor test/e2e-tests/protractor.conf.js --browser=firefox --cucumberOpts.tags=@Yrbs,@PRAMS,@Home
   #- ./node_modules/.bin/protractor test/e2e-tests/protractor.conf.js --browser=firefox --cucumberOpts.tags=@Natality,@Mortality
   #- ./node_modules/.bin/protractor test/e2e-tests/protractor.conf.js --browser=firefox --cucumberOpts.tags=@CancerIncidence,@Common,@Infant
   #- ./node_modules/.bin/protractor test/e2e-tests/protractor.conf.js --browser=firefox --cucumberOpts.tags=@Census,@AIDS
@@ -103,25 +103,23 @@ before_deploy:
 
 
 deploy:
-- provider:  if [ "$TRAVIS_BRANCH" != "master" ]; then s3; fi
-  access_key_id:  if [ "$TRAVIS_BRANCH" != "master" ]; then $OWH_ACCESS_KEY; fi
-  secret_access_key:  if [ "$TRAVIS_BRANCH" != "master" ]; then $OWH_ACCESS_SECRET; fi
-  local_dir:   if [ "$TRAVIS_BRANCH" != "master" ]; then dpl_cd_upload; fi
-  skip_cleanup:   if [ "$TRAVIS_BRANCH" != "master" ]; then true; fi
-  on:   if [ "$TRAVIS_BRANCH" != "master" ]; then &2; fi
-    repo:   if [ "$TRAVIS_BRANCH" != "master" ]; then semanticbits/owh-ds; fi
+- provider:  s3
+  access_key_id:  $OWH_ACCESS_KEY
+  skip_cleanup:   true
+  on: &2
+    repo: semanticbits/owh-ds
     branch:
-     -   if [ "$TRAVIS_BRANCH" != "master" ]; develop; fi
+     - develop
+    condition: "$TRAVIS_BRANCH" != "master"
      # - release (TBD)
-  bucket:   if [ "$TRAVIS_BRANCH" != "master" ]; then sb-owh-deployment; fi
-- provider: if [ "$TRAVIS_BRANCH" != "master" ]; then codedeploy; fi
-  access_key_id: if [ "$TRAVIS_BRANCH" != "master" ]; then $OWH_ACCESS_KEY; fi
-  secret_access_key: if [ "$TRAVIS_BRANCH" != "master" ]; then $OWH_ACCESS_SECRET; fi
-  bundle_type: if [ "$TRAVIS_BRANCH" != "master" ]; then zip; fi
-  application: if [ "$TRAVIS_BRANCH" != "master" ]; then OwhDev; fi
-  deployment_group: if [ "$TRAVIS_BRANCH" != "master" ]; then $TRAVIS_BRANCH; fi
-  on: if [ "$TRAVIS_BRANCH" != "master" ]; then *2; fi
-
+  bucket:   sb-owh-deployment
+- provider: codedeploy
+  access_key_id: $OWH_ACCESS_KEY
+  application: OwhDev
+  deployment_group: $TRAVIS_BRANCH
+  on: *2
+    condition: "$TRAVIS_BRANCH" != "master"
+      
 after_script:
   - if [ "$TRAVIS_BRANCH" != "master" ]; then kill -9 $(fuser -n tcp 3000 2> /dev/null); fi
 
