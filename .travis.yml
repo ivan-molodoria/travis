@@ -108,7 +108,7 @@ deploy:
   secret_access_key: $OWH_ACCESS_SECRET
   local_dir: dpl_cd_upload
   skip_cleanup: true
-  on: &2
+  on: 
     repo: semanticbits/owh-ds
     branch: develop
          # - release (TBD)
@@ -121,7 +121,7 @@ deploy:
   bundle_type: zip
   application: OwhDev
   deployment_group: $TRAVIS_BRANCH
-  on: *2
+  on: 
     condition: "$TRAVIS_BRANCH != master"
       
 after_script:
