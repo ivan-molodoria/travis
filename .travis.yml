@@ -101,20 +101,20 @@ before_deploy:
   - if [ "$TRAVIS_BRANCH" != "master" ]; then ls dpl_tmp; fi
   - if [ "$TRAVIS_BRANCH" != "master" ]; then rm -rf dpl_tmp; fi
 
-if [ "$TRAVIS_BRANCH" != "master" ]; then
-deploy:
--  then provider:  s3
-  access_key_id: $OWH_ACCESS_KEY
-    secret_access_key: $OWH_ACCESS_SECRET
-  local_dir:  dpl_cd_upload
-  skip_cleanup:  true
-  on:  &2
-    repo:  semanticbits/owh-ds
-    branch:
-     -  develop
-     # - release (TBD)
-  bucket:  sb-owh-deployment
-  ; fi
+#if [ "$TRAVIS_BRANCH" != "master" ]; then
+#deploy:
+#-  then provider:  s3
+#  access_key_id: $OWH_ACCESS_KEY
+#    secret_access_key: $OWH_ACCESS_SECRET
+#  local_dir:  dpl_cd_upload
+#  skip_cleanup:  true
+#  on:  &2
+#    repo:  semanticbits/owh-ds
+#    branch:
+#     -  develop
+#     # - release (TBD)
+#  bucket:  sb-owh-deployment
+#  ; fi
 #- provider: if [ "$TRAVIS_BRANCH" != "master" ]; then codedeploy
 #  access_key_id: if [ "$TRAVIS_BRANCH" != "master" ]; then $OWH_ACCESS_KEY
 #  secret_access_key: if [ "$TRAVIS_BRANCH" != "master" ]; then $OWH_ACCESS_SECRET
@@ -144,7 +144,6 @@ install:
 script:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then cd $TRAVIS_BUILD_DIR/software/owh; fi
   - if [ "$TRAVIS_BRANCH" == "master" ]; then cp -R $TRAVIS_BUILD_DIR/deployment/* $TRAVIS_BUILD_DIR/software/owh; fi
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then aws s3 sync s3://owh-config-prod $TRAVIS_BUILD_DIR/software/owh; fi
   - if [ "$TRAVIS_BRANCH" == "master" ]; then mkdir -p $TRAVIS_BUILD_DIR/software/owh/.owh/logs; fi
 
 after_success:
