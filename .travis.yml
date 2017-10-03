@@ -103,17 +103,22 @@ before_deploy:
 
 
 deploy:
-  provider:  s3
+- provider:  s3
   access_key_id:  $OWH_ACCESS_KEY
-  skip_cleanup:   true
+  secret_access_key: $OWH_ACCESS_SECRET
+  local_dir: dpl_cd_upload
+  skip_cleanup: true
   on: 
     repo: semanticbits/owh-ds
     branch: develop
-    condition: "$TRAVIS_BRANCH" != "master"
-     # - release (TBD)
+         # - release (TBD)
   bucket:   sb-owh-deployment
-  provider: codedeploy
+- provider: codedeploy
   access_key_id: $OWH_ACCESS_KEY
+  secret_access_key: $OWH_ACCESS_SECRET
+  bucket: sb-owh-deployment
+  key: owh-$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER.zip
+  bundle_type: zip
   application: OwhDev
   deployment_group: $TRAVIS_BRANCH
   on: 
