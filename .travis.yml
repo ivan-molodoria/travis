@@ -49,7 +49,8 @@ install:
     fi;  
 
 before_script:
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then  
+  - |
+    if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then  
        sleep 10; 
        curl http://54.242.94.197/esdev;  # To verify ElasticSearch running
        # curl http://54.242.94.197/stats/questions?d=yrbss; # check connection to YRBS dev service
@@ -63,7 +64,7 @@ before_script:
        npm start > /dev/null &;
        ./node_modules/protractor/bin/webdriver-manager update; 
        sleep 1; #give server time to start
-   fi;
+    fi;
 
 group: if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then deprecated-2017Q2; fi
 language: if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then java; fi
