@@ -72,7 +72,8 @@ jdk:
   -  if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then oraclejdk8; fi
 
 script:
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then 
+  - |
+    if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then 
        npm run-script test-single-run; 
        ls; 
        ls coverage; 
@@ -88,13 +89,14 @@ script:
        # ./node_modules/.bin/protractor test/e2e-tests/protractor.conf.js --browser=firefox --cucumberOpts.tags=@CancerIncidence,@Common,@Infant;
        # ./node_modules/.bin/protractor test/e2e-tests/protractor.conf.js --browser=firefox --cucumberOpts.tags=@Census,@AIDS;
        # ./node_modules/.bin/protractor test/e2e-tests/protractor.conf.js --browser=firefox --cucumberOpts.tags=@STD,@TB,@DataDocumentation;
-  else
+    else
        cd $TRAVIS_BUILD_DIR/software/owh; 
        cp -R $TRAVIS_BUILD_DIR/deployment/* $TRAVIS_BUILD_DIR/software/owh;
        mkdir -p $TRAVIS_BUILD_DIR/software/owh/.owh/logs;
         
 after_success:
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then 
+  - |
+    if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then 
        cd ..; 
        lcov-result-merger './**/lcov.info' 'merged-lcov.info';
        codeclimate-test-reporter < "merged-lcov.info"; 
@@ -107,10 +109,10 @@ after_success:
        docker push 498284886784.dkr.ecr.us-east-1.amazonaws.com/owh-prod:latest; 
        cd $TRAVIS_BUILD_DIR; 
        sh script.sh;
-
+    fi;
 before_deploy:
-
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then 
+  - |
+    if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then 
        cd $TRAVIS_BUILD_DIR/software/owh; 
        # Dealing with paths that fight each other... start the nasty bit..
        cp -R $TRAVIS_BUILD_DIR/deployment/* $TRAVIS_BUILD_DIR/software/owh; 
@@ -134,6 +136,7 @@ before_deploy:
        mv dpl_tmp/owh-${TRAVIS_BRANCH}-${TRAVIS_BUILD_NUMBER}.zip dpl_cd_upload/; 
        ls dpl_tmp; 
        rm -rf dpl_tmp; 
+    fi;
 deploy:
 - provider: s3
   access_key_id: $OWH_ACCESS_KEY
