@@ -10,58 +10,60 @@ services:
 addons:
   code_climate:
     repo_token: aa4bb84528f703e93a68f03079e9870898d452659e9498bbba8fb043c66e3083
-
+    
 env:
   global:
-    - if '[ "$TRAVIS_BRANCH" != "master" ]; then 
-         AWS_ACCESS_KEY_ID=$OWH_ACCESS_KEY;
-         AWS_SECRET_ACCESS_KEY=$OWH_ACCESS_SECRET;
-         NODE_ENV=test;
-    else 
-         AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_PROD; 
-         AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_PROD;
-    fi'
+    - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then AWS_ACCESS_KEY_ID=$OWH_ACCESS_KEY; fi
+    - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then AWS_SECRET_ACCESS_KEY=$OWH_ACCESS_SECRET; fi
+    - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then NODE_ENV=test; fi
     
 before_install:
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then docker info; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then mkdir -p .owh/logs; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then openssl aes-256-cbc -K $encrypted_24a8a70e72ba_key -iv $encrypted_24a8a70e72ba_iv -in .owh/owh-config.yaml.enc -out .owh/owh-config.yaml -d; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then sudo pip install awscli; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then export PATH=$PATH:$HOME/.local/bin; fi
-
+  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then 
+       docker info;
+       mkdir -p .owh/logs; 
+       openssl aes-256-cbc -K $encrypted_24a8a70e72ba_key -iv $encrypted_24a8a70e72ba_iv -in .owh/owh-config.yaml.enc -out .owh/owh-config.yaml -d;
+       sudo pip install awscli;
+       export PATH=$PATH:$HOME/.local/bin;
+    fi'
+   
 install:
-  - if [ "$TRAVIS_BRANCH" == "deploy/production" ]; then docker info; fi
-  - if [ "$TRAVIS_BRANCH" == "deploy/production" ]; then mkdir -p .owh/logs; fi
-  - if [ "$TRAVIS_BRANCH" == "deploy/production" ]; then sudo pip install awscli; fi
-  - if [ "$TRAVIS_BRANCH" == "deploy/production" ]; then export PATH=$PATH:$HOME/.local/bin; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then cd software/owh/server; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then nvm install node; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then nvm use node; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then node --version; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then npm install; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then npm install --dev; fi
-  - cd $TRAVIS_BUILD_DIR/software/owh/client
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then npm install; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then npm install --dev; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then npm install -g nodemon; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then npm install -g istanbul; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then npm install -g codeclimate-test-reporter; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then npm install -g lcov-result-merger; fi
+  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then 
+       cd software/owh/server;
+       nvm install node; 
+       nvm use node; 
+       node --version; 
+       npm install; 
+       npm install --dev; 
+       cd $TRAVIS_BUILD_DIR/software/owh/client;
+       npm install; 
+       npm install --dev;
+       npm install -g nodemon; 
+       npm install -g istanbul; 
+       npm install -g codeclimate-test-reporter;
+       npm install -g lcov-result-merger; 
+    else
+       docker info;
+       mkdir -p .owh/logs; 
+       sudo pip install awscli;
+       export PATH=$PATH:$HOME/.local/bin;
+    fi;    
 
 before_script:
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then sleep 10; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then curl http://54.242.94.197/esdev; fi  # To verify ElasticSearch running
-  # - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then curl http://54.242.94.197/stats/questions?d=yrbss; fi # check connection to YRBS dev service; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then java -version; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then echo $JAVA_HOME; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then export DISPLAY=:99.0; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then sh -e /etc/init.d/xvfb start; fi
-#  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then npm install; fi
-#  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then npm install -g pm2@latest; fi
-#  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then sudo apt-get install nodejs-legacy; fi
-  - npm start > /dev/null &
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then ./node_modules/protractor/bin/webdriver-manager update; fi
-  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then sleep 1; fi #give server time to start
+  - if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then  
+       sleep 10; 
+       curl http://54.242.94.197/esdev;  # To verify ElasticSearch running
+       # curl http://54.242.94.197/stats/questions?d=yrbss; # check connection to YRBS dev service
+       java -version; 
+       echo $JAVA_HOME; 
+       export DISPLAY=:99.0; 
+       sh -e /etc/init.d/xvfb start; 
+       # npm install; 
+       # npm install -g pm2@latest; 
+       # sudo apt-get install nodejs-legacy; 
+       npm start > /dev/null &;
+       ./node_modules/protractor/bin/webdriver-manager update; 
+       sleep 1; #give server time to start
+   fi;
 
 group: if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then deprecated-2017Q2; fi
 language: if [ "$TRAVIS_BRANCH" != "deploy/production" ]; then java; fi
